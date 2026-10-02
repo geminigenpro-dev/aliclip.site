@@ -237,22 +237,22 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
 
               {/* Quick Navigation Arrows */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className="w-7 h-7 rounded-lg border border-purple-500/30 bg-white/5 hover:bg-purple-900/40 text-slate-300 flex items-center justify-center transition-all cursor-pointer active:scale-95"
-                  aria-label="Anterior"
+                  className="w-9 h-9 min-h-[36px] rounded-lg border border-purple-500/30 bg-white/5 hover:bg-purple-900/40 text-slate-300 flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                  aria-label="Producto anterior"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="w-7 h-7 rounded-lg border border-purple-500/30 bg-white/5 hover:bg-purple-900/40 text-slate-300 flex items-center justify-center transition-all cursor-pointer active:scale-95"
-                  aria-label="Siguiente"
+                  className="w-9 h-9 min-h-[36px] rounded-lg border border-purple-500/30 bg-white/5 hover:bg-purple-900/40 text-slate-300 flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                  aria-label="Producto siguiente"
                 >
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -305,9 +305,9 @@ export const Hero: React.FC<HeroProps> = ({
                         </div>
 
                         <div>
-                          <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight group-hover:text-purple-300 transition-colors">
+                          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight group-hover:text-purple-300 transition-colors">
                             {currentItem.name}
-                          </h3>
+                          </h2>
                           <p className="text-xs text-slate-300 line-clamp-2 mt-0.5 leading-relaxed">
                             {currentItem.desc}
                           </p>
@@ -333,6 +333,9 @@ export const Hero: React.FC<HeroProps> = ({
                             <img
                               src={currentItem.imageUrl}
                               alt={currentItem.name}
+                              width={64}
+                              height={64}
+                              decoding="async"
                               className="w-full h-full object-contain filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]"
                             />
                           ) : (
@@ -422,6 +425,10 @@ export const Hero: React.FC<HeroProps> = ({
                         <img
                           src={item.imageUrl}
                           alt={item.name}
+                          width={28}
+                          height={28}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-contain p-0.5"
                         />
                       ) : (

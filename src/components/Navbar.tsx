@@ -75,6 +75,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`Contactar por WhatsApp al ${settings.whatsappDisplay}`}
               className="font-bold underline hover:text-cyan-200 transition-colors flex items-center gap-1"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -89,9 +90,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-3 sm:gap-4 lg:gap-6">
             {/* Logo */}
-            <div
+            <button
+              type="button"
               onClick={onBrandClick}
-              className="flex items-center gap-2.5 shrink-0 group select-none cursor-pointer outline-none focus:outline-none focus:ring-0"
+              aria-label={`Inicio de ${settings.name}${settings.suffix}`}
+              className="flex items-center gap-2.5 shrink-0 group select-none cursor-pointer outline-none focus:outline-none focus:ring-0 text-left bg-transparent border-none p-0"
             >
               <div
                 className={`w-9 h-9 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-all overflow-hidden ${
@@ -140,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {settings.subtitle}
                 </span>
               </div>
-            </div>
+            </button>
 
             {/* Desktop Search Bar */}
             <div className="flex-1 max-w-xs xl:max-w-sm hidden md:block">
@@ -260,7 +263,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 href={waUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-sm hover:shadow transition-all active:scale-95 shrink-0"
+                aria-label={`Comprar membresía por WhatsApp al ${settings.whatsappDisplay}`}
+                className="min-h-[40px] px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-sm hover:shadow transition-all active:scale-95 shrink-0"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span className="hidden xs:inline">WhatsApp</span>

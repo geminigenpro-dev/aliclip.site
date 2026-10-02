@@ -256,6 +256,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 <img
                   src={product.imageUrl}
                   alt={product.name}
+                  width={128}
+                  height={128}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-contain filter drop-shadow-md dark:drop-shadow-[0_10px_20px_rgba(0,0,0,0.55)] transform transition-transform duration-300 group-hover:scale-110"
                 />
               ) : (
@@ -397,7 +401,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                     key={idx}
                     type="button"
                     onClick={(e) => handlePlanClick(e, idx)}
-                    className={`py-1.5 px-2 text-[10.5px] font-black rounded-xl border transition-all text-center truncate cursor-pointer ${
+                    aria-label={`Seleccionar plan ${pl.name} para ${product.name}`}
+                    className={`min-h-[38px] py-1.5 px-2 text-[10.5px] font-black rounded-xl border transition-all text-center truncate cursor-pointer ${
                       idx === selectedPlanIndex
                         ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-500 shadow-sm'
                         : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-slate-700'
@@ -439,7 +444,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <button
             type="button"
             onClick={handleCardClick}
-            className="px-4 py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-700 hover:via-indigo-700 hover:to-pink-700 shadow-md group-hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all duration-300 flex items-center gap-1.5 group/btn cursor-pointer shrink-0"
+            aria-label={`Comprar cuenta de ${product.name} ${currentPlan.name}`}
+            className="min-h-[44px] px-4 py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-700 hover:via-indigo-700 hover:to-pink-700 shadow-md group-hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all duration-300 flex items-center gap-1.5 group/btn cursor-pointer shrink-0"
           >
             <span>Comprar</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />

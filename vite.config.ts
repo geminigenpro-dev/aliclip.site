@@ -12,7 +12,27 @@ export default defineConfig(() => {
       },
     },
     build: {
-      chunkSizeWarningLimit: 1600,
+      chunkSizeWarningLimit: 600,
+      cssCodeSplit: true,
+      minify: 'esbuild',
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+              return 'vendor-react';
+            }
+            if (id.includes('node_modules/firebase/')) {
+              return 'vendor-firebase';
+            }
+            if (id.includes('node_modules/motion/')) {
+              return 'vendor-motion';
+            }
+            if (id.includes('node_modules/lucide-react/')) {
+              return 'vendor-icons';
+            }
+          },
+        },
+      },
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.

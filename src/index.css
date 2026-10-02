@@ -68,8 +68,17 @@
   }
 
   .animate-gradient-text {
-    background-size: 200% 200% !important;
-    animation: gradient-flow 4s ease infinite !important;
+    background-size: 150% 150% !important;
+    animation: gradient-flow 6s ease-in-out infinite !important;
+    will-change: background-position;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 
   /* Brand Gradient Text (Ensures cross-browser text clipping without block artifacts) */

@@ -154,10 +154,10 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Col 2: Catálogo & Accesos Directos */}
           <div>
-            <h4 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] mb-3 flex items-center gap-1.5">
+            <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] mb-3 flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-indigo-500" />
               <span>Catálogo & Servicios</span>
-            </h4>
+            </h3>
             <div className="space-y-3">
               <div>
                 <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
@@ -233,10 +233,10 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Col 3: Seguridad, Respaldo & Legal */}
           <div>
-            <h4 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] mb-3 flex items-center gap-1.5">
+            <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] mb-3 flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
               <span>Garantía & Confianza</span>
-            </h4>
+            </h3>
 
             <div className="space-y-2.5">
               {/* Trust highlights */}
@@ -285,10 +285,10 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Col 4: Métodos de Pago (Sección única, compacta y organizada) */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h4 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                 <CreditCard className="w-3.5 h-3.5 text-indigo-500" />
                 <span>Métodos de Pago</span>
-              </h4>
+              </h3>
               <span className="text-[9.5px] font-bold px-1.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                 {visiblePaymentMethods.length} activos
               </span>

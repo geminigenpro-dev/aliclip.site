@@ -116,7 +116,7 @@ export const SocialDock: React.FC<SocialDockProps> = ({ settings }) => {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`neon-social-btn ${item.neonClass} group relative w-9 h-9 rounded-xl bg-slate-900/90 text-slate-200 border border-slate-700/80 shadow-md flex items-center justify-center cursor-pointer`}
+            className={`neon-social-btn ${item.neonClass} group relative w-11 h-11 rounded-xl bg-slate-900/90 text-slate-200 border border-slate-700/80 shadow-md flex items-center justify-center cursor-pointer`}
             style={{
               transitionDelay: isOpen ? `${(activeSocials.length - 1 - idx) * 25}ms` : '0ms',
             }}
@@ -125,7 +125,7 @@ export const SocialDock: React.FC<SocialDockProps> = ({ settings }) => {
             {item.icon}
 
             {/* Glowing neon hover tooltip badge */}
-            <div className="absolute left-11 px-2.5 py-1 rounded-lg bg-slate-900/95 text-white text-[10px] font-bold whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 shadow-xl border border-slate-700/90 flex items-center gap-1.5 group-hover:translate-x-1">
+            <div className="absolute left-13 px-2.5 py-1 rounded-lg bg-slate-900/95 text-white text-[10px] font-bold whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 shadow-xl border border-slate-700/90 flex items-center gap-1.5 group-hover:translate-x-1">
               <span
                 className="w-1.5 h-1.5 rounded-full"
                 style={{ backgroundColor: item.accentColor }}
@@ -141,7 +141,7 @@ export const SocialDock: React.FC<SocialDockProps> = ({ settings }) => {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-10 h-10 rounded-xl text-white shadow-lg flex items-center justify-center border border-white/20 transition-all duration-300 active:scale-95 cursor-pointer overflow-hidden ${
+          className={`w-11 h-11 rounded-xl text-white shadow-lg flex items-center justify-center border border-white/20 transition-all duration-300 active:scale-95 cursor-pointer overflow-hidden ${
             !isOpen ? 'neon-dock-pulse hover:scale-105' : 'shadow-indigo-500/40 scale-102'
           }`}
           style={{

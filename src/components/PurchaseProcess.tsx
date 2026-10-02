@@ -38,7 +38,7 @@ export const PurchaseProcess: React.FC<PurchaseProcessProps> = ({ settings }) =>
               01
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Elige tu Plan</h4>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white">Elige tu Plan</h3>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Selecciona el servicio y la modalidad (1 mes, 3 meses o perfil privado).
               </p>
@@ -50,7 +50,7 @@ export const PurchaseProcess: React.FC<PurchaseProcessProps> = ({ settings }) =>
               02
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Realiza el Pago</h4>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white">Realiza el Pago</h3>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Transfiere mediante Yape, Plin, BCP o Binance Pay sin comisiones ocultas.
               </p>
@@ -62,7 +62,7 @@ export const PurchaseProcess: React.FC<PurchaseProcessProps> = ({ settings }) =>
               03
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Envía Captura</h4>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white">Envía Captura</h3>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Comparte el comprobante al WhatsApp oficial para validación inmediata.
               </p>
@@ -74,7 +74,7 @@ export const PurchaseProcess: React.FC<PurchaseProcessProps> = ({ settings }) =>
               04
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Recibe tu Acceso</h4>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white">Recibe tu Acceso</h3>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 En menos de 3 minutos recibes tus credenciales con garantía total activa.
               </p>

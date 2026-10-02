@@ -54,11 +54,12 @@ import {
   subscribeToClaims,
   seedProductsCollection,
   DEFAULT_SETTINGS,
+  INITIAL_PRODUCTS,
 } from './services/storeService';
 import { Product, ProductPlan, StoreSettings, Claim } from './types';
 
 export default function App() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [settings, setSettings] = useState<StoreSettings>(DEFAULT_SETTINGS);
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
@@ -376,6 +377,7 @@ export default function App() {
 
       {/* Catalog Section - Immediate First Viewport Access */}
       <main id="catalogo" className="pt-2 pb-12 bg-slate-50 dark:bg-[#070913] flex-1 transition-colors duration-200">
+        <h2 className="sr-only">Catálogo de Membresías y Cuentas Premium</h2>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-3">
           {/* Category Filter Bar - Futuristic Cosmic Segmented Controls */}
           <div className="bg-white/80 dark:bg-[#0e1322]/90 backdrop-blur-xl rounded-2xl p-2 border border-slate-200/80 dark:border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-2.5 transition-colors">
@@ -384,7 +386,8 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCategory('all')}
-                className={`px-3.5 py-2 rounded-xl font-black transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                aria-label="Ver todos los productos"
+                className={`min-h-[42px] px-3.5 py-2 rounded-xl font-black transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   category === 'all'
                     ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(168,85,247,0.45)]'
                     : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
@@ -406,7 +409,8 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCategory('ai')}
-                className={`px-3.5 py-2 rounded-xl font-black transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                aria-label="Filtrar por Inteligencia Artificial"
+                className={`min-h-[42px] px-3.5 py-2 rounded-xl font-black transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   category === 'ai'
                     ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(168,85,247,0.45)]'
                     : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
@@ -428,7 +432,8 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCategory('streaming')}
-                className={`px-3.5 py-2 rounded-xl font-black transition-all duration-300 flex items-center gap-2 cursor-pointer ${
+                aria-label="Filtrar por Streaming y Series"
+                className={`min-h-[42px] px-3.5 py-2 rounded-xl font-black transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   category === 'streaming'
                     ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(168,85,247,0.45)]'
                     : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
