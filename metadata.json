@@ -1,0 +1,6 @@
+{
+  "name": "Alixplay • Digital Store",
+  "description": "Tienda digital de membresías de IA, streaming y cuentas premium con sincronización en tiempo real y panel de administración.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
