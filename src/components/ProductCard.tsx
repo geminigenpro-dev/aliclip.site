@@ -377,7 +377,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   </span>
                 )
               ) : (
-                <span className="text-slate-400 bg-slate-200/50 dark:bg-slate-800/50 px-2 py-0.5 rounded-md">
+                <span className="text-slate-600 dark:text-slate-400 bg-slate-200/50 dark:bg-slate-800/50 px-2 py-0.5 rounded-md font-medium">
                   Agotado
                 </span>
               )}
@@ -387,7 +387,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Dynamic Plan Selector Pills & Live Plan Details */}
           {plans.length > 1 && (
             <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-800/80 space-y-2">
-              <span className="text-[10px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-wider block text-center">
+              <span className="text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider block text-center">
                 Elige tu Modalidad / Plan
               </span>
               <div
@@ -430,7 +430,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div className="mt-4 pt-3.5 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between gap-3">
           <div>
             {originalPriceStr && (
-              <span className="text-[11px] text-slate-400 line-through block leading-none font-bold">
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 line-through block leading-none font-bold">
                 {originalPriceStr}
               </span>
             )}

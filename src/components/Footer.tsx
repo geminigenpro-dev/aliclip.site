@@ -160,7 +160,7 @@ export const Footer: React.FC<FooterProps> = ({
             </h3>
             <div className="space-y-3">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                <p className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">
                   Inteligencia Artificial
                 </p>
                 <ul className="space-y-1 text-[11.5px] text-slate-600 dark:text-slate-400">
@@ -186,7 +186,7 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
 
               <div>
-                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                <p className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">
                   Streaming & Ocio
                 </p>
                 <ul className="space-y-1 text-[11.5px] text-slate-600 dark:text-slate-400">

@@ -142,91 +142,102 @@ export default function App() {
     }, 3500);
   };
 
-  // Real-time Firestore Subscriptions
+  // Real-time Firestore Subscriptions (deferred after initial paint for optimal FCP/LCP/TBT)
   useEffect(() => {
-    // 1. Subscribe to products
-    const unsubProducts = subscribeToProducts(
-      (items) => {
-        setProducts(items);
-        setLoading(false);
-        // Auto-seed if completely empty on initial load
-        if (items.length === 0) {
-          seedProductsCollection(false).catch(console.error);
-        }
-      },
-      (err) => {
-        console.error('Error in products subscription:', err);
-        setLoading(false);
-      }
-    );
+    let unsubProducts: (() => void) | undefined;
+    let unsubSettings: (() => void) | undefined;
+    let unsubClaims: (() => void) | undefined;
 
-    // 2. Subscribe to settings
-    const unsubSettings = subscribeToSettings(
-      (newSettings) => {
-        setSettings(newSettings);
-        // Update document title and primary styles dynamically
-        document.title = `${newSettings.name}${newSettings.suffix} • ${newSettings.subtitle}`;
-        document.documentElement.style.setProperty('--brand-primary', newSettings.colorPrimary);
-        document.documentElement.style.setProperty('--brand-accent', newSettings.colorAccent);
-
-        // Calculate dynamic neon glow shadows from hex colors
-        const hexToRgba = (hex: string, alpha: number) => {
-          const clean = hex.replace('#', '');
-          if (clean.length === 6) {
-            const r = parseInt(clean.substring(0, 2), 16);
-            const g = parseInt(clean.substring(2, 4), 16);
-            const b = parseInt(clean.substring(4, 6), 16);
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    const timer = setTimeout(() => {
+      // 1. Subscribe to products
+      unsubProducts = subscribeToProducts(
+        (items) => {
+          if (items && items.length > 0) {
+            setProducts(items);
           }
-          return hex;
-        };
-
-        document.documentElement.style.setProperty(
-          '--brand-primary-glow',
-          hexToRgba(newSettings.colorPrimary, 0.38)
-        );
-        document.documentElement.style.setProperty(
-          '--brand-accent-glow',
-          hexToRgba(newSettings.colorAccent, 0.38)
-        );
-
-        // Update browser favicon dynamically
-        let favEl = document.getElementById('dynamic-favicon') as HTMLLinkElement | null;
-        if (!favEl) {
-          favEl = document.createElement('link');
-          favEl.id = 'dynamic-favicon';
-          favEl.rel = 'icon';
-          document.head.appendChild(favEl);
+          setLoading(false);
+          // Auto-seed if completely empty on initial load
+          if (items.length === 0) {
+            seedProductsCollection(false).catch(console.error);
+          }
+        },
+        (err) => {
+          console.error('Error in products subscription:', err);
+          setLoading(false);
         }
-        if (newSettings.faviconBase64) {
-          favEl.href = newSettings.faviconBase64;
-        } else {
-          favEl.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${encodeURIComponent(
-            newSettings.colorPrimary
-          )}'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>`;
-        }
-      },
-      (err) => {
-        console.error('Error in settings subscription:', err);
-      }
-    );
+      );
 
-    // 3. Subscribe to claims
-    const unsubClaims = subscribeToClaims(
-      (claimList) => {
-        setClaims(claimList);
-      },
-      (err) => {
-        console.error('Error in claims subscription:', err);
+      // 2. Subscribe to settings
+      unsubSettings = subscribeToSettings(
+        (newSettings) => {
+          setSettings(newSettings);
+          // Update document title and primary styles dynamically
+          document.title = `${newSettings.name}${newSettings.suffix} • ${newSettings.subtitle}`;
+          document.documentElement.style.setProperty('--brand-primary', newSettings.colorPrimary);
+          document.documentElement.style.setProperty('--brand-accent', newSettings.colorAccent);
+
+          // Calculate dynamic neon glow shadows from hex colors
+          const hexToRgba = (hex: string, alpha: number) => {
+            const clean = hex.replace('#', '');
+            if (clean.length === 6) {
+              const r = parseInt(clean.substring(0, 2), 16);
+              const g = parseInt(clean.substring(2, 4), 16);
+              const b = parseInt(clean.substring(4, 6), 16);
+              return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            }
+            return hex;
+          };
+
+          document.documentElement.style.setProperty(
+            '--brand-primary-glow',
+            hexToRgba(newSettings.colorPrimary, 0.38)
+          );
+          document.documentElement.style.setProperty(
+            '--brand-accent-glow',
+            hexToRgba(newSettings.colorAccent, 0.38)
+          );
+
+          // Update browser favicon dynamically
+          let favEl = document.getElementById('dynamic-favicon') as HTMLLinkElement | null;
+          if (!favEl) {
+            favEl = document.createElement('link');
+            favEl.id = 'dynamic-favicon';
+            favEl.rel = 'icon';
+            document.head.appendChild(favEl);
+          }
+          if (newSettings.faviconBase64) {
+            favEl.href = newSettings.faviconBase64;
+          } else {
+            favEl.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${encodeURIComponent(
+              newSettings.colorPrimary
+            )}'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>`;
+          }
+        },
+        (err) => {
+          console.error('Error in settings subscription:', err);
+        }
+      );
+
+      // 3. Claims subscription only if admin session or claim modal is opened
+      if (isAdmin || showClaims || showAdminPanel) {
+        unsubClaims = subscribeToClaims(
+          (claimList) => {
+            setClaims(claimList);
+          },
+          (err) => {
+            console.error('Error in claims subscription:', err);
+          }
+        );
       }
-    );
+    }, 120);
 
     return () => {
-      unsubProducts();
-      unsubSettings();
-      unsubClaims();
+      clearTimeout(timer);
+      if (unsubProducts) unsubProducts();
+      if (unsubSettings) unsubSettings();
+      if (unsubClaims) unsubClaims();
     };
-  }, []);
+  }, [isAdmin, showClaims, showAdminPanel]);
 
   // Keyboard shortcut & hash detection for discreet admin login
   useEffect(() => {
