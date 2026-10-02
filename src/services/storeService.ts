@@ -69,7 +69,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     id: 'prod_chatgpt',
     name: 'ChatGPT Plus',
     category: 'ai',
-    tag: 'GPT-4o & DALL-E 3',
+    tag: 'Oferta Flash • GPT-4o',
     desc: 'Acceso prioritario al modelo GPT-4o, análisis avanzado de datos, navegación y generación ilimitada.',
     imageUrl: '',
     icon: 'bot',
@@ -188,7 +188,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     id: 'prod_netflix',
     name: 'Netflix 4K Ultra HD',
     category: 'streaming',
-    tag: 'Anti-Hogar y PIN Seguro',
+    tag: 'Oferta Flash • 4K HDR',
     desc: 'Series originales, estrenos y películas en la más alta resolución 4K HDR.',
     imageUrl: '',
     icon: 'tv',
@@ -337,6 +337,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   showYoutube: true,
   showTwitter: false,
   paymentMethods: DEFAULT_PAYMENT_METHODS,
+  reviewsBadgeText: '✨ +15,000 Clientes Satisfechos en Todo el Perú',
 };
 
 const PRODUCTS_COLLECTION = 'products';
@@ -366,6 +367,7 @@ export function subscribeToProducts(
           imageUrl: data.imageUrl || '',
           icon: data.icon || 'sparkles',
           available: data.available !== false,
+          stock: typeof data.stock === 'number' ? data.stock : 10,
           order: typeof data.order === 'number' ? data.order : 99,
           plans: Array.isArray(data.plans) && data.plans.length > 0 ? data.plans : [
             { name: '1 Mes', price: 'S/ 25.00', desc: 'Plan Estándar' }
@@ -558,6 +560,23 @@ export async function toggleProductAvailability(id: string, current: boolean): P
   try {
     await updateDoc(docRef, {
       available: !current,
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, `${PRODUCTS_COLLECTION}/${id}`);
+  }
+}
+
+/**
+ * Updates product stock units and auto-adjusts availability if stock is 0
+ */
+export async function updateProductStock(id: string, newStock: number): Promise<void> {
+  const docRef = doc(db, PRODUCTS_COLLECTION, id);
+  try {
+    const validStock = Math.max(0, newStock);
+    await updateDoc(docRef, {
+      stock: validStock,
+      available: validStock > 0,
       updatedAt: new Date().toISOString(),
     });
   } catch (error) {

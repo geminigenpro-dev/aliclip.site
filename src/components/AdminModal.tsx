@@ -43,11 +43,13 @@ import {
   saveProductToFirestore,
   deleteProductFromFirestore,
   toggleProductAvailability,
+  updateProductStock,
   saveSettingsToFirestore,
   seedProductsCollection,
   DEFAULT_PAYMENT_METHODS,
   savePaymentMethodsToFirestore,
 } from '../services/storeService';
+import { THEME_PRESETS, getThemePresetById } from '../services/themePresets';
 import { uploadFileToFirebaseStorage } from '../firebase';
 import {
   compressImage,
@@ -85,6 +87,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [prodTag, setProdTag] = useState('');
   const [prodDesc, setProdDesc] = useState('');
   const [prodImageUrl, setProdImageUrl] = useState('');
+  const [prodAvailable, setProdAvailable] = useState<boolean>(true);
+  const [prodStock, setProdStock] = useState<number>(10);
   const [prodP1Name, setProdP1Name] = useState('1 Mes');
   const [prodP1Price, setProdP1Price] = useState('S/ 29.90');
   const [prodP2Name, setProdP2Name] = useState('');
@@ -400,6 +404,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     setProdTag('');
     setProdDesc('');
     setProdImageUrl('');
+    setProdAvailable(true);
+    setProdStock(10);
     setProdP1Name('1 Mes');
     setProdP1Price('S/ 29.90');
     setProdP2Name('');
@@ -414,6 +420,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     setProdTag(p.tag || '');
     setProdDesc(p.desc || '');
     setProdImageUrl(p.imageUrl || '');
+    setProdAvailable(p.available !== false);
+    setProdStock(typeof p.stock === 'number' ? p.stock : 10);
     setProdP1Name(p.plans[0]?.name || '1 Mes');
     setProdP1Price(p.plans[0]?.price || 'S/ 29.90');
     setProdP2Name(p.plans[1]?.name || '');
@@ -520,7 +528,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       tag: prodTag.trim() || 'Membresía',
       desc: prodDesc.trim(),
       imageUrl: safeImageUrl,
-      available: true,
+      available: prodAvailable,
+      stock: Math.max(0, Number(prodStock) || 0),
       plans,
       icon: prodCategory === 'ai' ? 'sparkles' : 'film',
     };
@@ -994,14 +1003,24 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
-                        Etiqueta
-                      </label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase">
+                          Etiqueta
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setProdTag('Oferta Flash')}
+                          className="text-[9.5px] font-black text-rose-600 dark:text-rose-400 hover:underline cursor-pointer flex items-center gap-0.5"
+                          title="Marcar este producto como Oferta Flash para activar el contador regresivo"
+                        >
+                          🔥 + Oferta Flash
+                        </button>
+                      </div>
                       <input
                         type="text"
                         value={prodTag}
                         onChange={(e) => setProdTag(e.target.value)}
-                        placeholder="Ej: GPT-4o o 4K UHD"
+                        placeholder="Ej: Oferta Flash o GPT-4o"
                         className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 focus:outline-none"
                       />
                     </div>
@@ -1090,6 +1109,37 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     </div>
                   </div>
 
+                  {/* Availability & Stock Units Section */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="prodAvailableInput"
+                        checked={prodAvailable}
+                        onChange={(e) => setProdAvailable(e.target.checked)}
+                        className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                      />
+                      <label htmlFor="prodAvailableInput" className="text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                        Disponible para la venta
+                      </label>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
+                        Unidades en Stock Disponibles
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="999"
+                        value={prodStock}
+                        onChange={(e) => setProdStock(parseInt(e.target.value) || 0)}
+                        placeholder="Ej: 10"
+                        className="w-full px-2.5 py-1 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 font-bold"
+                      />
+                    </div>
+                  </div>
+
                   {/* Plans */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-2 bg-white rounded-lg border border-slate-200">
                     <div>
@@ -1167,6 +1217,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     <th className="p-3">Servicio</th>
                     <th className="p-3">Categoría</th>
                     <th className="p-3">Precio Ref.</th>
+                    <th className="p-3">Stock / Unid.</th>
                     <th className="p-3">Disponibilidad</th>
                     <th className="p-3 text-right">Acciones</th>
                   </tr>
@@ -1196,10 +1247,41 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         {p.plans[0]?.price || 'S/ 0.00'}
                       </td>
                       <td className="p-3">
+                        <div className="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const curr = typeof p.stock === 'number' ? p.stock : 10;
+                              await updateProductStock(p.id, Math.max(0, curr - 1));
+                              onToast(`Stock de "${p.name}" actualizado a ${Math.max(0, curr - 1)}.`);
+                            }}
+                            className="w-4 h-4 rounded hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center font-black text-xs text-slate-600 dark:text-slate-300 cursor-pointer"
+                            title="Restar 1"
+                          >
+                            -
+                          </button>
+                          <span className="font-extrabold text-[11px] text-slate-800 dark:text-slate-100 min-w-[20px] text-center">
+                            {p.stock ?? 10}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const curr = typeof p.stock === 'number' ? p.stock : 10;
+                              await updateProductStock(p.id, curr + 1);
+                              onToast(`Stock de "${p.name}" actualizado a ${curr + 1}.`);
+                            }}
+                            className="w-4 h-4 rounded hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center font-black text-xs text-slate-600 dark:text-slate-300 cursor-pointer"
+                            title="Sumar 1"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </td>
+                      <td className="p-3">
                         <button
                           type="button"
                           onClick={() => handleToggle(p.id, p.available)}
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold cursor-pointer ${
                             p.available ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'
                           }`}
                         >
@@ -1250,29 +1332,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 </span>
               </div>
 
-              {/* Simulated Browser Tab */}
-              <div className="bg-slate-200/70 p-1.5 rounded-xl border border-slate-300/80 flex items-center gap-2 max-w-sm">
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white rounded-lg shadow-2xs text-[10.5px] font-bold text-slate-700 truncate max-w-xs">
-                  <div className="w-4 h-4 rounded-sm overflow-hidden shrink-0 flex items-center justify-center bg-slate-100">
-                    {brandSettings.faviconBase64 ? (
-                      <img src={brandSettings.faviconBase64} alt="fav" className="w-full h-full object-contain" />
-                    ) : (
-                      <Globe className="w-3.5 h-3.5 text-indigo-600" />
-                    )}
-                  </div>
-                  <span className="truncate">
-                    {brandSettings.name}{brandSettings.suffix} • {brandSettings.subtitle}
-                  </span>
-                </div>
-                <div className="flex gap-1 ml-auto pr-1">
-                  <span className="w-2 h-2 rounded-full bg-slate-400" />
-                  <span className="w-2 h-2 rounded-full bg-slate-400" />
-                  <span className="w-2 h-2 rounded-full bg-slate-400" />
-                </div>
-              </div>
-
-              {/* Simulated Store Header */}
-              <div className="p-3 bg-white rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+              {/* Real-time Header Preview */}
+              <div className="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-11 h-11 flex items-center justify-center text-white overflow-hidden shrink-0 transition-all ${
@@ -1307,10 +1368,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     >
                       {brandSettings.name}
                       <span
+                        className="brand-gradient-text bg-clip-text text-transparent inline-block"
                         style={{
-                          background: `linear-gradient(135deg, ${brandSettings.colorPrimary} 0%, ${brandSettings.colorAccent} 100%)`,
+                          backgroundImage: `linear-gradient(135deg, ${brandSettings.colorPrimary} 0%, ${brandSettings.colorAccent} 100%)`,
                           WebkitBackgroundClip: 'text',
+                          backgroundClip: 'text',
                           WebkitTextFillColor: 'transparent',
+                          color: 'transparent',
                         }}
                       >
                         {brandSettings.suffix}
@@ -1725,6 +1789,23 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1 flex items-center justify-between">
+                    <span>Frase de la Insignia Superior de Testimonios</span>
+                    <span className="text-indigo-600 font-normal">Opiniones de Clientes</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={brandSettings.reviewsBadgeText || ''}
+                    onChange={(e) => setBrandSettings({ ...brandSettings, reviewsBadgeText: e.target.value })}
+                    placeholder="✨ +15,000 Clientes Satisfechos en Todo el Perú"
+                    className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-800"
+                  />
+                  <span className="text-[10px] text-slate-400 block mt-0.5">
+                    Modifica el texto persuasivo que encabeza la sección de testimonios (ej: ✨ +15,000 Clientes Satisfechos en Todo el Perú).
+                  </span>
+                </div>
               </div>
 
               {/* Card 4: Colores & Paletas de Acento */}
@@ -1762,68 +1843,53 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   </div>
                 </div>
 
-                {/* 8 Preset Themes */}
+                {/* Visual Theme Presets Grid */}
                 <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block mb-1.5">
-                    Paletas prémium recomendadas con 1 clic:
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block mb-2">
+                    Elige un Tema de Diseño Oficial (Armonía Global de Colores):
                   </span>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => applyColorPreset('#4f46e5', '#06b6d4')}
-                      className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 active:scale-95"
-                    >
-                      ⚡ Índigo Tech
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyColorPreset('#06b6d4', '#3b82f6')}
-                      className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 active:scale-95"
-                    >
-                      💎 Cyber Cyan
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyColorPreset('#059669', '#10b981')}
-                      className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 active:scale-95"
-                    >
-                      🌿 Esmeralda VIP
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyColorPreset('#7c3aed', '#ec4899')}
-                      className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 active:scale-95"
-                    >
-                      🔮 Ciberpunk
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyColorPreset('#e11d48', '#f59e0b')}
-                      className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 active:scale-95"
-                    >
-                      🔥 Sunset Fuego
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyColorPreset('#d97706', '#fbbf24')}
-                      className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 active:scale-95"
-                    >
-                      👑 Gold Luxury
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyColorPreset('#2563eb', '#38bdf8')}
-                      className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 active:scale-95"
-                    >
-                      🌌 Azul Eléctrico
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyColorPreset('#0f172a', '#64748b')}
-                      className="px-2 py-1.5 rounded-lg text-[10.5px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 active:scale-95"
-                    >
-                      🖤 Midnight Stealth
-                    </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {THEME_PRESETS.map((preset) => {
+                      const isSelected =
+                        brandSettings.activeThemePreset === preset.id ||
+                        (brandSettings.colorPrimary === preset.primary &&
+                          brandSettings.colorAccent === preset.accent);
+                      return (
+                        <div
+                          key={preset.id}
+                          onClick={() => {
+                            setBrandSettings({
+                              ...brandSettings,
+                              colorPrimary: preset.primary,
+                              colorAccent: preset.accent,
+                              activeThemePreset: preset.id,
+                            });
+                          }}
+                          className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all duration-200 select-none ${
+                            isSelected
+                              ? 'bg-purple-50 dark:bg-purple-950/40 border-purple-500 ring-2 ring-purple-400/50 shadow-sm'
+                              : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-400'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-xs font-black text-slate-800 dark:text-white">
+                              {preset.name}
+                            </span>
+                            {isSelected && (
+                              <span className="w-2 h-2 rounded-full bg-purple-500" />
+                            )}
+                          </div>
+                          {/* Visual Gradient Swatch */}
+                          <div
+                            className="h-3.5 rounded-md mb-1.5 shadow-2xs"
+                            style={{ background: preset.previewBg }}
+                          />
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                            {preset.description}
+                          </p>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

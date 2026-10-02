@@ -91,8 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Logo */}
             <div
               onClick={onBrandClick}
-              className="flex items-center gap-2.5 shrink-0 group select-none cursor-pointer"
-              title="Triple-clic para acceso administrativo"
+              className="flex items-center gap-2.5 shrink-0 group select-none cursor-pointer outline-none focus:outline-none focus:ring-0"
             >
               <div
                 className={`w-9 h-9 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-all overflow-hidden ${
@@ -125,10 +124,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   {settings.name}
                   <span
+                    className="brand-gradient-text bg-clip-text text-transparent inline-block"
                     style={{
-                      background: `linear-gradient(135deg, ${settings.colorPrimary} 0%, ${settings.colorAccent} 100%)`,
+                      backgroundImage: `linear-gradient(135deg, ${settings.colorPrimary} 0%, ${settings.colorAccent} 100%)`,
                       WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
+                      color: 'transparent',
                     }}
                   >
                     {settings.suffix}
@@ -169,20 +171,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Dynamic Compact Navigation Dock (Desktop) */}
             <nav className="hidden lg:flex items-center p-1 rounded-2xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 backdrop-blur-md shadow-2xs">
               <a
+                href="#mas-vendidos"
+                className="px-2.5 py-1.5 rounded-xl text-xs font-black text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs active:scale-95"
+              >
+                <Flame className="w-3.5 h-3.5 text-rose-500 fill-rose-500 animate-pulse" />
+                <span>+ Vendidos</span>
+              </a>
+
+              <a
                 href="#catalogo"
                 className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-slate-700/90 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs active:scale-95"
               >
                 <Grid className="w-3.5 h-3.5 text-indigo-500" />
                 <span>Catálogo</span>
-              </a>
-
-              <a
-                href="#promos"
-                className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-white dark:hover:bg-slate-700/90 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs active:scale-95"
-              >
-                <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
-                <span>Combos</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
               </a>
 
               <a
@@ -324,6 +325,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* Grid of Navigation Items */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <a
+                  href="#mas-vendidos"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 p-2.5 rounded-xl border border-rose-200/80 dark:border-rose-900/60 bg-rose-50/70 dark:bg-rose-950/40 hover:bg-rose-100/80 dark:hover:bg-rose-900/50 transition-all group"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Flame className="w-4 h-4 fill-rose-500 animate-pulse" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs font-black text-rose-700 dark:text-rose-300">+ Vendidos VIP</div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">Las membresías top en demanda</div>
+                  </div>
+                </a>
+
+                <a
                   href="#catalogo"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-3 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 hover:bg-indigo-50/80 dark:hover:bg-indigo-950/40 hover:border-indigo-200 dark:hover:border-indigo-800/80 transition-all group"
@@ -334,23 +349,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <div className="min-w-0">
                     <div className="text-xs font-bold text-slate-900 dark:text-white">Catálogo Completo</div>
                     <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">IA, streaming y servicios digitales</div>
-                  </div>
-                </a>
-
-                <a
-                  href="#promos"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 p-2.5 rounded-xl border border-rose-200/80 dark:border-rose-900/50 bg-rose-50/40 dark:bg-rose-950/20 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all group"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Flame className="w-4 h-4 animate-pulse" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center justify-between">
-                      <span>Combos & Ofertas</span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-rose-500 text-white font-black leading-none">HOT</span>
-                    </div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">Packs con descuento especial</div>
                   </div>
                 </a>
 

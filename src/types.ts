@@ -13,6 +13,7 @@ export interface Product {
   imageUrl?: string;
   icon?: string;
   available: boolean;
+  stock?: number; // Cantidad de unidades disponibles en stock
   selectedPlanIndex?: number;
   plans: ProductPlan[];
   order?: number;
@@ -42,6 +43,7 @@ export interface StoreSettings {
   announcement: string;
   colorPrimary: string;
   colorAccent: string;
+  activeThemePreset?: string;
   creatorUrl: string;
   creatorHandle: string;
   brandFont?: string;
@@ -66,6 +68,7 @@ export interface StoreSettings {
   logoBase64?: string;
   faviconBase64?: string;
   paymentMethods?: PaymentMethod[];
+  reviewsBadgeText?: string;
   updatedAt?: string;
 }
 

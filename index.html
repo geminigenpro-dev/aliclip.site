@@ -15,6 +15,57 @@
     <link rel="icon" id="dynamic-favicon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234f46e5'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>" />
     <script>
       (function() {
+        // Suppress benign iframe WebSocket HMR reconnection errors in AI Studio preview
+        var isWsError = function(val) {
+          if (!val) return false;
+          var str = typeof val === 'string' ? val : (val.message || val.stack || String(val) || '');
+          return str.indexOf('WebSocket') !== -1 ||
+                 str.indexOf('websocket') !== -1 ||
+                 str.indexOf('[vite]') !== -1 ||
+                 str.indexOf('closed without opened') !== -1;
+        };
+
+        window.addEventListener('unhandledrejection', function(e) {
+          if (isWsError(e.reason)) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof e.stopImmediatePropagation === 'function') {
+              e.stopImmediatePropagation();
+            }
+          }
+        }, true);
+
+        window.addEventListener('error', function(e) {
+          if (isWsError(e.message) || isWsError(e.error)) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof e.stopImmediatePropagation === 'function') {
+              e.stopImmediatePropagation();
+            }
+          }
+        }, true);
+
+        // Filter out benign Vite WebSocket warnings from the console
+        var origConsoleError = console.error;
+        console.error = function() {
+          for (var i = 0; i < arguments.length; i++) {
+            if (isWsError(arguments[i])) {
+              return;
+            }
+          }
+          return origConsoleError.apply(console, arguments);
+        };
+
+        var origConsoleWarn = console.warn;
+        console.warn = function() {
+          for (var i = 0; i < arguments.length; i++) {
+            if (isWsError(arguments[i])) {
+              return;
+            }
+          }
+          return origConsoleWarn.apply(console, arguments);
+        };
+
         try {
           var stored = localStorage.getItem('alixplay_theme');
           var isDark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);

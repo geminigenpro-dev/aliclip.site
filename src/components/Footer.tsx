@@ -111,10 +111,13 @@ export const Footer: React.FC<FooterProps> = ({
               >
                 {settings.name}
                 <span
+                  className="brand-gradient-text bg-clip-text text-transparent inline-block"
                   style={{
-                    background: `linear-gradient(135deg, ${settings.colorPrimary} 0%, ${settings.colorAccent} 100%)`,
+                    backgroundImage: `linear-gradient(135deg, ${settings.colorPrimary} 0%, ${settings.colorAccent} 100%)`,
                     WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
+                    color: 'transparent',
                   }}
                 >
                   {settings.suffix}

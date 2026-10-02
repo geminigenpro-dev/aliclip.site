@@ -54,6 +54,61 @@
     border-color: var(--brand-primary) !important;
   }
 
+  /* Animated Radiant Gradient Text */
+  @keyframes gradient-flow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .animate-gradient-text {
+    background-size: 200% 200% !important;
+    animation: gradient-flow 4s ease infinite !important;
+  }
+
+  /* Brand Gradient Text (Ensures cross-browser text clipping without block artifacts) */
+  .brand-gradient-text {
+    display: inline-block;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+  }
+
+  /* LED Screen Ticker Marquee Animation */
+  @keyframes led-ticker-slide {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-led-ticker {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    animation: led-ticker-slide 28s linear infinite;
+  }
+
+  .animate-led-ticker:hover {
+    animation-play-state: paused;
+  }
+
+  /* LED Screen Dot Matrix / Phosphor Grid Texture */
+  .led-screen-bg {
+    background-color: #04060c;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 4px 4px;
+  }
+
   /* Neon Glow Floating Dock Styles */
   .neon-social-btn {
     position: relative;

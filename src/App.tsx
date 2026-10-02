@@ -1,26 +1,53 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Grid,
   Bot,
   Film,
-  Sparkles,
   SearchX,
   MessageCircle,
 } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { BenefitsTicker } from './components/BenefitsTicker';
 import { ProductCard } from './components/ProductCard';
-import { FeaturedCombos } from './components/FeaturedCombos';
-import { PaymentMethods } from './components/PaymentMethods';
-import { PurchaseProcess } from './components/PurchaseProcess';
-import { FaqSection } from './components/FaqSection';
-import { Footer } from './components/Footer';
 import { SocialDock } from './components/SocialDock';
-import { BuyModal } from './components/BuyModal';
-import { TermsModal } from './components/TermsModal';
-import { ClaimsModal } from './components/ClaimsModal';
-import { AdminModal } from './components/AdminModal';
-import { AdminAuthModal } from './components/AdminAuthModal';
+import { ScrollToTopButton } from './components/ScrollToTopButton';
+import { LazySection } from './components/LazySection';
+import { SeoHead } from './components/SeoHead';
+
+// Lazy-loaded heavy below-the-scroll sections to optimize initial page load
+const CustomerReviews = lazy(() =>
+  import('./components/CustomerReviews').then((m) => ({ default: m.CustomerReviews }))
+);
+const PaymentMethods = lazy(() =>
+  import('./components/PaymentMethods').then((m) => ({ default: m.PaymentMethods }))
+);
+const PurchaseProcess = lazy(() =>
+  import('./components/PurchaseProcess').then((m) => ({ default: m.PurchaseProcess }))
+);
+const FaqSection = lazy(() =>
+  import('./components/FaqSection').then((m) => ({ default: m.FaqSection }))
+);
+const Footer = lazy(() =>
+  import('./components/Footer').then((m) => ({ default: m.Footer }))
+);
+
+// Lazy-loaded on-demand modals
+const BuyModal = lazy(() =>
+  import('./components/BuyModal').then((m) => ({ default: m.BuyModal }))
+);
+const TermsModal = lazy(() =>
+  import('./components/TermsModal').then((m) => ({ default: m.TermsModal }))
+);
+const ClaimsModal = lazy(() =>
+  import('./components/ClaimsModal').then((m) => ({ default: m.ClaimsModal }))
+);
+const AdminModal = lazy(() =>
+  import('./components/AdminModal').then((m) => ({ default: m.AdminModal }))
+);
+const AdminAuthModal = lazy(() =>
+  import('./components/AdminAuthModal').then((m) => ({ default: m.AdminAuthModal }))
+);
 import {
   subscribeToProducts,
   subscribeToSettings,
@@ -104,11 +131,7 @@ export default function App() {
   }, []);
 
   const handleToggleTheme = () => {
-    setTheme((prev) => {
-      const nextTheme = prev === 'dark' ? 'light' : 'dark';
-      showToast(nextTheme === 'dark' ? 'Modo Oscuro activado 🌙' : 'Modo Claro activado ☀️');
-      return nextTheme;
-    });
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
   const showToast = (msg: string) => {
@@ -311,10 +334,17 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen font-sans bg-[#F8FAFC] dark:bg-[#0b0f19] text-[#0F172A] dark:text-slate-100 transition-colors duration-200">
-      {/* Toast Notification */}
+      {/* Dynamic SEO Meta Tags & Schema.org JSON-LD */}
+      <SeoHead
+        settings={settings}
+        products={products}
+        selectedProduct={selectedProduct}
+      />
+
+      {/* Toast Notification (Positioned at bottom-center so it never covers the header or logo) */}
       {toastMessage && (
-        <div className="fixed top-4 right-4 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-bold border border-slate-700 animate-in fade-in slide-in-from-top-2 duration-200">
-          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 dark:bg-slate-950/95 text-white px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-bold border border-slate-700/80 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-200">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -334,23 +364,30 @@ export default function App() {
         onToggleTheme={handleToggleTheme}
       />
 
-      {/* Hero Section */}
-      <Hero settings={settings} />
+      {/* Top Main Hero Banner with Integrated + Vendidos Translucent Loop Slider */}
+      <Hero
+        settings={settings}
+        products={products}
+        onSelectProduct={handleDirectBuyFromCard}
+      />
 
-      {/* Catalog Section */}
-      <main id="catalogo" className="pt-3 sm:pt-4 pb-8 bg-slate-50 dark:bg-[#0b0f19] flex-1 transition-colors duration-200">
+      {/* Animated LED Screen Ticker (Infinite Seamless Loop Marquee) */}
+      <BenefitsTicker settings={settings} />
+
+      {/* Catalog Section - Immediate First Viewport Access */}
+      <main id="catalogo" className="pt-2 pb-12 bg-slate-50 dark:bg-[#070913] flex-1 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-3">
-          {/* Category Filter Bar - Dynamic & Compact */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl p-1.5 sm:p-2 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-wrap items-center justify-between gap-2 transition-colors">
-            {/* Filter Tabs (No horizontal scrollbar) */}
-            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+          {/* Category Filter Bar - Futuristic Cosmic Segmented Controls */}
+          <div className="bg-white/80 dark:bg-[#0e1322]/90 backdrop-blur-xl rounded-2xl p-2 border border-slate-200/80 dark:border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-2.5 transition-colors">
+            {/* Filter Tabs */}
+            <div className="flex flex-wrap items-center gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => setCategory('all')}
-                className={`px-3 py-1.5 rounded-lg font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3.5 py-2 rounded-xl font-black transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   category === 'all'
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300'
+                    ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(168,85,247,0.45)]'
+                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
                 }`}
               >
                 <Grid className="w-3.5 h-3.5" />
@@ -358,7 +395,7 @@ export default function App() {
                 <span
                   className={`ml-0.5 px-1.5 py-0.2 text-[10px] font-bold rounded-md ${
                     category === 'all'
-                      ? 'bg-white/20 text-white'
+                      ? 'bg-white/25 text-white'
                       : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                   }`}
                 >
@@ -369,10 +406,10 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCategory('ai')}
-                className={`px-3 py-1.5 rounded-lg font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3.5 py-2 rounded-xl font-black transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   category === 'ai'
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300'
+                    ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(168,85,247,0.45)]'
+                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
                 }`}
               >
                 <Bot className="w-3.5 h-3.5 text-indigo-400" />
@@ -380,7 +417,7 @@ export default function App() {
                 <span
                   className={`ml-0.5 px-1.5 py-0.2 text-[10px] font-bold rounded-md ${
                     category === 'ai'
-                      ? 'bg-white/20 text-white'
+                      ? 'bg-white/25 text-white'
                       : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                   }`}
                 >
@@ -391,10 +428,10 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCategory('streaming')}
-                className={`px-3 py-1.5 rounded-lg font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3.5 py-2 rounded-xl font-black transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   category === 'streaming'
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300'
+                    ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(168,85,247,0.45)]'
+                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
                 }`}
               >
                 <Film className="w-3.5 h-3.5 text-cyan-400" />
@@ -402,7 +439,7 @@ export default function App() {
                 <span
                   className={`ml-0.5 px-1.5 py-0.2 text-[10px] font-bold rounded-md ${
                     category === 'streaming'
-                      ? 'bg-white/20 text-white'
+                      ? 'bg-white/25 text-white'
                       : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                   }`}
                 >
@@ -411,10 +448,10 @@ export default function App() {
               </button>
             </div>
 
-            {/* Right Side Status Indicator (Armar Combo removed) */}
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 px-2 py-0.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-semibold text-[11px]">
+            {/* Right Side Status Indicator */}
+            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 px-2 py-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" />
+              <span className="font-bold text-[11px] text-slate-700 dark:text-slate-300">
                 {loading ? 'Cargando membresías...' : `${filteredProducts.length} servicios disponibles`}
               </span>
             </div>
@@ -435,31 +472,34 @@ export default function App() {
 
           {/* Products Grid */}
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 h-48 animate-pulse flex flex-col justify-between"
+                  className="bg-[#0e1322]/80 rounded-3xl border border-slate-800 p-6 h-84 animate-pulse flex flex-col justify-between"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800" />
-                    <div className="space-y-1.5 flex-1">
-                      <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-3/4" />
-                      <div className="h-3 bg-slate-100 dark:bg-slate-850 rounded w-1/2" />
-                    </div>
+                  <div className="flex justify-between items-center">
+                    <div className="h-5 bg-slate-800 rounded-full w-24" />
+                    <div className="h-5 bg-slate-800 rounded-full w-20" />
                   </div>
-                  <div className="h-8 bg-slate-100 dark:bg-slate-800 rounded" />
+                  <div className="w-28 h-28 rounded-2xl bg-slate-800/80 mx-auto" />
+                  <div className="space-y-2">
+                    <div className="h-5 bg-slate-800 rounded w-3/4 mx-auto" />
+                    <div className="h-3 bg-slate-850 rounded w-1/2 mx-auto" />
+                  </div>
+                  <div className="h-10 bg-slate-800 rounded-xl" />
                 </div>
               ))}
             </div>
           ) : filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4">
-              {filteredProducts.map((prod) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+              {filteredProducts.map((prod, idx) => (
                 <ProductCard
                   key={prod.id}
                   product={prod}
                   settings={settings}
                   onSelectProduct={handleDirectBuyFromCard}
+                  index={idx}
                 />
               ))}
             </div>
@@ -483,42 +523,94 @@ export default function App() {
         </div>
       </main>
 
-      {/* Featured Combos */}
-      <FeaturedCombos settings={settings} onRequestCombo={handleRequestCombo} />
-
-      {/* Payment Methods */}
-      <PaymentMethods
-        settings={settings}
-        onOpenPaymentInfo={() => {
-          if (products.length > 0) {
-            setSelectedProduct(products[0]);
-            setSelectedPlan(products[0].plans[0] || null);
+      {/* Lazy-Loaded Below-The-Scroll Sections to optimize initial load & FCP */}
+      <LazySection id="opiniones" minHeight="480px">
+        <Suspense
+          fallback={
+            <div className="py-16 text-center">
+              <div className="w-8 h-8 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" />
+            </div>
           }
-        }}
-      />
+        >
+          <CustomerReviews settings={settings} />
+        </Suspense>
+      </LazySection>
 
-      {/* Purchase Process */}
-      <PurchaseProcess settings={settings} />
+      <LazySection minHeight="400px">
+        <Suspense
+          fallback={
+            <div className="py-14 text-center">
+              <div className="w-8 h-8 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" />
+            </div>
+          }
+        >
+          <PaymentMethods
+            settings={settings}
+            onOpenPaymentInfo={() => {
+              if (products.length > 0) {
+                setSelectedProduct(products[0]);
+                setSelectedPlan(products[0].plans[0] || null);
+              }
+            }}
+          />
+        </Suspense>
+      </LazySection>
 
-      {/* FAQ Section */}
-      <FaqSection />
+      <LazySection minHeight="340px">
+        <Suspense
+          fallback={
+            <div className="py-12 text-center">
+              <div className="w-8 h-8 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" />
+            </div>
+          }
+        >
+          <PurchaseProcess settings={settings} />
+        </Suspense>
+      </LazySection>
 
-      {/* Footer */}
-      <Footer
-        settings={settings}
-        onFilterCategory={(cat) => setCategory(cat as any)}
-        onOpenTerms={() => setShowTerms(true)}
-        onOpenClaims={() => setShowClaims(true)}
-        onOpenAdminAuth={() => {
-          if (isAdmin) setShowAdminPanel(true);
-          else setShowAdminAuth(true);
-        }}
-        theme={theme}
-        onToggleTheme={handleToggleTheme}
-      />
+      <LazySection id="faq" minHeight="450px">
+        <Suspense
+          fallback={
+            <div className="py-14 text-center">
+              <div className="w-8 h-8 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" />
+            </div>
+          }
+        >
+          <FaqSection />
+        </Suspense>
+      </LazySection>
+
+      <LazySection minHeight="320px">
+        <Suspense
+          fallback={
+            <div className="py-12 text-center">
+              <div className="w-8 h-8 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin mx-auto" />
+            </div>
+          }
+        >
+          <Footer
+            settings={settings}
+            onFilterCategory={(cat) => setCategory(cat as any)}
+            onOpenTerms={() => setShowTerms(true)}
+            onOpenClaims={() => setShowClaims(true)}
+            onOpenAdminAuth={() => {
+              if (isAdmin) setShowAdminPanel(true);
+              else setShowAdminAuth(true);
+            }}
+            theme={theme}
+            onToggleTheme={handleToggleTheme}
+          />
+        </Suspense>
+      </LazySection>
 
       {/* Floating Neon Social Dock */}
       <SocialDock settings={settings} />
+
+      {/* Scroll to Top Button with Parallax and Scroll Progress */}
+      <ScrollToTopButton
+        primaryColor={settings.colorPrimary}
+        accentColor={settings.colorAccent}
+      />
 
       {/* Floating WhatsApp Button (Compact & Discreet) */}
       <a
@@ -537,56 +629,58 @@ export default function App() {
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 border border-slate-900"></span>
         </span>
 
-        {/* Compact Hover Tooltip (doesn't resize or block page content) */}
+        {/* Compact Hover Tooltip */}
         <span className="absolute right-12 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-900/95 text-white text-[11px] font-semibold whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 border border-slate-700/80 shadow-xl hidden sm:flex items-center gap-1.5 group-hover:-translate-x-1">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
           <span>WhatsApp Soporte</span>
         </span>
       </a>
 
-      {/* Modals */}
-      {selectedProduct && (
-        <BuyModal
-          product={selectedProduct}
-          plan={selectedPlan}
-          settings={settings}
-          onClose={() => {
-            setSelectedProduct(null);
-            setSelectedPlan(null);
-          }}
-          onToast={showToast}
-        />
-      )}
+      {/* On-Demand Modals with Suspense */}
+      <Suspense fallback={null}>
+        {selectedProduct && (
+          <BuyModal
+            product={selectedProduct}
+            plan={selectedPlan}
+            settings={settings}
+            onClose={() => {
+              setSelectedProduct(null);
+              setSelectedPlan(null);
+            }}
+            onToast={showToast}
+          />
+        )}
 
-      {showTerms && <TermsModal onClose={() => setShowTerms(false)} />}
+        {showTerms && <TermsModal onClose={() => setShowTerms(false)} />}
 
-      {showClaims && (
-        <ClaimsModal
-          settings={settings}
-          onClose={() => setShowClaims(false)}
-          onToast={showToast}
-        />
-      )}
+        {showClaims && (
+          <ClaimsModal
+            settings={settings}
+            onClose={() => setShowClaims(false)}
+            onToast={showToast}
+          />
+        )}
 
-      {showAdminAuth && (
-        <AdminAuthModal
-          onClose={() => setShowAdminAuth(false)}
-          onSuccess={handleAdminLoginSuccess}
-          onToast={showToast}
-        />
-      )}
+        {showAdminAuth && (
+          <AdminAuthModal
+            onClose={() => setShowAdminAuth(false)}
+            onSuccess={handleAdminLoginSuccess}
+            onToast={showToast}
+          />
+        )}
 
-      {showAdminPanel && (
-        <AdminModal
-          products={products}
-          settings={settings}
-          claims={claims}
-          adminUsername={adminUsername}
-          onClose={() => setShowAdminPanel(false)}
-          onLogout={handleAdminLogout}
-          onToast={showToast}
-        />
-      )}
+        {showAdminPanel && (
+          <AdminModal
+            products={products}
+            settings={settings}
+            claims={claims}
+            adminUsername={adminUsername}
+            onClose={() => setShowAdminPanel(false)}
+            onLogout={handleAdminLogout}
+            onToast={showToast}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }
