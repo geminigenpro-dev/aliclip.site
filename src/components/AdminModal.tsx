@@ -54,6 +54,7 @@ import {
   resizeAndCompressImageToBase64,
   compressProductImage,
 } from '../utils/imageCompressor';
+import { generateProductDescription } from '../services/aiService';
 
 interface AdminModalProps {
   products: Product[];
@@ -89,6 +90,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [prodP2Name, setProdP2Name] = useState('');
   const [prodP2Price, setProdP2Price] = useState('');
   const [savingProduct, setSavingProduct] = useState(false);
+  const [generatingAiDesc, setGeneratingAiDesc] = useState(false);
 
   // Settings form state
   const [brandSettings, setBrandSettings] = useState<StoreSettings>({ ...settings });
@@ -420,6 +422,26 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   };
 
   const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleGenerateAiDescription = async () => {
+    if (!prodName.trim()) {
+      onToast('Escribe primero el nombre del producto para generar la descripción.');
+      return;
+    }
+    setGeneratingAiDesc(true);
+    try {
+      const desc = await generateProductDescription(prodName, prodCategory, prodTag);
+      if (desc) {
+        setProdDesc(desc);
+        onToast('✨ Descripción generada con Gemini AI desde el backend.');
+      }
+    } catch (err: any) {
+      console.error('Error con Gemini:', err);
+      onToast(err.message || 'No se pudo generar descripción. Verifica GEMINI_API_KEY en el servidor.');
+    } finally {
+      setGeneratingAiDesc(false);
+    }
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
@@ -986,9 +1008,21 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">
-                      Descripción corta
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase">
+                        Descripción corta
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleGenerateAiDescription}
+                        disabled={generatingAiDesc || !prodName.trim()}
+                        className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 disabled:opacity-40 disabled:hover:text-indigo-600 transition-colors cursor-pointer"
+                        title="Generar descripción comercial usando Gemini AI seguro en el backend"
+                      >
+                        <Sparkles className={`w-3 h-3 ${generatingAiDesc ? 'animate-spin text-amber-500' : 'text-indigo-500'}`} />
+                        <span>{generatingAiDesc ? 'Generando con Gemini...' : 'Sugerir con Gemini AI'}</span>
+                      </button>
+                    </div>
                     <input
                       type="text"
                       value={prodDesc}
