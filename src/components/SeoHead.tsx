@@ -15,12 +15,12 @@ export const SeoHead: React.FC<SeoHeadProps> = ({
   useEffect(() => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
-    const brandName = `${settings.name || 'Alix'}${settings.suffix || 'play'}`;
+    const brandName = `${settings.name || 'Ali'}${settings.suffix || 'clip'}`;
     const origin = window.location.origin;
     const currentUrl = window.location.href;
 
     // 1. Dynamic Title & Description
-    let pageTitle = `${brandName} • Tienda de Cuentas Premium & Membresías IA`;
+    let pageTitle = `${brandName} • Tienda de Cuentas Premium & Membresías IA en Perú`;
     let pageDesc = `Compra membresías de ChatGPT Plus, Streaming 4K, Midjourney y Canva Pro con entrega en 3 minutos por WhatsApp en Perú. Cuentas 100% garantizadas y renovables.`;
 
     if (selectedProduct) {
@@ -46,9 +46,12 @@ export const SeoHead: React.FC<SeoHeadProps> = ({
 
     // Standard Meta Tags
     setMetaTag('name', 'description', pageDesc);
-    setMetaTag('name', 'keywords', 'cuentas streaming peru, chatgpt plus peru barata, netflix 4k peru, canva pro barato, midjourney, membresias ia, cuentas premium baratas, alixplay');
+    setMetaTag('name', 'keywords', 'cuentas streaming peru, chatgpt plus peru barata, netflix 4k peru, canva pro barato, midjourney, membresias ia, cuentas premium baratas, aliclip, aliclip.site');
     setMetaTag('name', 'author', brandName);
     setMetaTag('name', 'robots', 'index, follow');
+
+    // Default or Product Share Image
+    const shareImage = selectedProduct?.imageUrl || `${origin}/og-share-banner.png`;
 
     // OpenGraph Tags
     setMetaTag('property', 'og:site_name', brandName);
@@ -56,17 +59,16 @@ export const SeoHead: React.FC<SeoHeadProps> = ({
     setMetaTag('property', 'og:description', pageDesc);
     setMetaTag('property', 'og:type', selectedProduct ? 'product' : 'website');
     setMetaTag('property', 'og:url', currentUrl);
-    if (selectedProduct?.imageUrl) {
-      setMetaTag('property', 'og:image', selectedProduct.imageUrl);
-    }
+    setMetaTag('property', 'og:image', shareImage);
+    setMetaTag('property', 'og:image:secure_url', shareImage);
+    setMetaTag('property', 'og:image:width', '1200');
+    setMetaTag('property', 'og:image:height', '630');
 
     // Twitter Card Tags
     setMetaTag('name', 'twitter:card', 'summary_large_image');
     setMetaTag('name', 'twitter:title', pageTitle);
     setMetaTag('name', 'twitter:description', pageDesc);
-    if (selectedProduct?.imageUrl) {
-      setMetaTag('name', 'twitter:image', selectedProduct.imageUrl);
-    }
+    setMetaTag('name', 'twitter:image', shareImage);
 
     // Canonical Link Tag
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;

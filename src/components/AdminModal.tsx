@@ -1980,7 +1980,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                       type="url"
                       value={brandSettings.instagramUrl || ''}
                       onChange={(e) => setBrandSettings({ ...brandSettings, instagramUrl: e.target.value })}
-                      placeholder="https://www.instagram.com/alixplay.store"
+                      placeholder="https://www.instagram.com/aliclip.site"
                       className="w-full px-2 py-1 text-[11px] rounded border border-slate-300"
                     />
                     {brandSettings.instagramUrl && (

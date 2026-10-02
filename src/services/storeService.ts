@@ -19,7 +19,7 @@ export const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
     name: 'Yape / Plin',
     badge: 'Inmediato • 0% comisión',
     accountNumber: '+51 900 000 000',
-    accountHolder: 'Alixplay Store Oficial',
+    accountHolder: 'AliClip Store Oficial',
     instructions: 'Envía captura del comprobante por WhatsApp tras realizar el yapeo.',
     color: '#8b5cf6', // Violet/Purple neon
     icon: 'smartphone',
@@ -31,7 +31,7 @@ export const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
     name: 'Binance Pay',
     badge: 'Cripto USDT • Sin comisiones',
     accountNumber: '849201938',
-    accountHolder: 'AlixplayPay (USDT)',
+    accountHolder: 'AliClipPay (USDT)',
     instructions: 'Paga directo en USDT mediante Binance Pay ID desde tu app Binance.',
     color: '#f59e0b', // Gold/Amber neon
     icon: 'coins',
@@ -43,7 +43,7 @@ export const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
     name: 'BCP Soles',
     badge: 'Transferencia Directa',
     accountNumber: '191-99882211-0-45',
-    accountHolder: 'Alixplay Store E.I.R.L.',
+    accountHolder: 'AliClip Store E.I.R.L.',
     instructions: 'CCI: 002-191-0099882211045-52. Acepta transferencias BCP y banca móvil.',
     color: '#06b6d4', // Cyan neon
     icon: 'credit-card',
@@ -55,7 +55,7 @@ export const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
     name: 'Interbank Soles',
     badge: 'Transferencia Móvil',
     accountNumber: '200-300400500-1',
-    accountHolder: 'Alixplay Store Oficial',
+    accountHolder: 'AliClip Store Oficial',
     instructions: 'CCI: 003-200-003004005001-33. Transferencias interbancarias inmediatas.',
     color: '#10b981', // Emerald neon
     icon: 'wallet',
@@ -307,8 +307,8 @@ export const INITIAL_PRODUCTS: Product[] = [
 ];
 
 export const DEFAULT_SETTINGS: StoreSettings = {
-  name: 'Alix',
-  suffix: 'play',
+  name: 'Ali',
+  suffix: 'clip',
   subtitle: 'Digital Store',
   whatsappNumber: '51900000000',
   whatsappDisplay: '+51 900 000 000',
@@ -406,9 +406,18 @@ export function subscribeToSettings(
           ? data.paymentMethods
           : DEFAULT_PAYMENT_METHODS;
 
+        // Auto-upgrade legacy brand name if stored as 'Alix'/'play' in existing Firestore document
+        const rawName = data.name;
+        const rawSuffix = data.suffix;
+        const isLegacyBrand = (!rawName || rawName === 'Alix') && (!rawSuffix || rawSuffix === 'play');
+        const name = isLegacyBrand ? 'Ali' : rawName || 'Ali';
+        const suffix = isLegacyBrand ? 'clip' : (rawSuffix !== undefined ? rawSuffix : 'clip');
+
         onSuccess({
           ...DEFAULT_SETTINGS,
           ...data,
+          name,
+          suffix,
           paymentMethods,
         });
       } else {
